@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <iostream>
+#define MAX 50
+using namespace std;
+
+int Process[MAX], Avail[MAX], Allo[MAX][MAX], Max[MAX][MAX], Need[MAX][MAX];
+int m, n; // m so process, n so tai nguyen
+
+void NhapProcess(){
+    for (int i = 0; i < m; i++){
+        cin >> Process[i];
+    }
+}
+
+void NhapAllocation(){
+    for (int i = 0; i < m; i++){
+        for (int j = 0; j < n; j++){
+            cin >> Allo[i][j];
+        }
+    }
+}
+
+void NhapMax(){
+    for (int i = 0; i < m; i++){
+        for (int j = 0; j < n; j++){
+            cin >> Max[i][j];
+        }
+    }
+}
+
+void NhapAvailable(){
+    for (int i = 0; i < n; i++){
+        cin >> Avail[i];
+    }
+}
+
+void TinhNeed(){
+    for (int i = 0; i < m; i++){
+        for (int j = 0; j < n; j++){
+            Need[i][j] = Max[i][j] - Allo[i][j];
+        }
+    }
+}
+
+bool isSafe(){
+    TinhNeed();
+    //danh dau tat ca la chua ket thuc
+    bool finish[m] = {0};
+    //luu tru tinh trang an toan
+    int safeSeq[m];
+    //tao ban sao cua available
+    int work[n];
+    for(int i = 0; i < n; i++){
+        work[i] = Avail[i];
+    }
+    int count = 0;
+    while (count < m){
+        //tim mot qua trinh chua ket thuc
+        //cai nao duoc dap ung voi hien tai
+        bool found = false;
+        for (int i = 0; i < m; i++){
+            //kiem  tra tien trinh ket thuc chua
+            if (finish[i] == 0){
+                int j;
+                for (j = 0; j < n; j++){
+                    // kiem tra nhu cau tai nguyen hien tai co nho hon work khong
+                    if (Need[i][j] > work[j])
+                        break;
+                }
+                if (j == n){
+                    //giai phong tai nguyen: cong allocation vao work
+                    for (int k = 0 ; k < n ; k++){
+                        work[k] += Allo[i][k];
+                    }
+                    //them tien trinh vao trang thai an toan
+                    safeSeq[count++] = i;
+                    //danh dau tien trinh hoan thanh
+                    finish[i] = 1;
+                    found = true;
+                }
+            }
+        }
+        if (found == false)
+        {
+            cout << "\nSystem is not in safe state";
+            return false;
+        }
+    }
+    cout << "\nSystem is in safe state.\nSafe"
+         " sequence is: ";
+    for (int i = 0; i < m ; i++)
+        cout << safeSeq[i] << " ";
+  
+    return true;
+}
+int main(){
+    cout << "Nhap so process, so tai nguyen: ";
+    cin >> m >> n;
+    cout << "\nNhap tien trinh: ";
+    NhapProcess();
+    cout << "\nNhap allocation: ";
+    NhapAllocation();
+    cout << "\nNhap max :";
+    NhapMax();
+    cout << "\nNhap available: ";
+    NhapAvailable();
+    
+    // kiem tra he thong co an toan hay khong
+    isSafe();
+    return 0;
+}
